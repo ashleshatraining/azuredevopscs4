@@ -1,0 +1,177 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- main
+
+parameters:
+  - name: actionToPerform
+    displayName: "Deploy/Destroy"
+    type: string
+    default: Deploy
+    values: [Deploy , Destroy]
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+  appname: 'casestudy4app2'
+
+stages:
+  - stage: Build 
+    jobs:
+      - job: Build 
+        steps:
+          - task: NuGetToolInstaller@1
+        
+          - task: NuGetCommand@2
+            inputs:
+              command: 'restore'
+              restoreSolution: '$(solution)'
+              feedsToUse: 'select'
+
+          - task: DotNetCoreCLI@2
+            inputs:
+              command: 'build'
+              projects: '**/*.csproj'
+              arguments: '--configuration $(buildConfiguration)'
+
+          - task: DotNetCoreCLI@2
+            inputs:
+              command: 'publish'
+              publishWebProjects: true
+              arguments: '--configuration $(buildConfiguration) --output $(build.artifactstagingdirectory)'
+
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+              ArtifactName: 'drop'
+              publishLocation: 'Container'
+
+          - task: CopyFiles@2
+            inputs:
+              SourceFolder: 'Iac-code/terraform'
+              Contents: '**'
+              TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+              ArtifactName: 'drop'
+              publishLocation: 'Container'
+
+  - stage: test 
+    jobs:
+       - job: test  
+         steps:
+           - task: DotNetCoreCLI@2
+             inputs:
+               command: 'test'
+               projects: 'sampleUnitTest/sampleUnitTest.csproj'
+               arguments: '--configuration $(buildConfiguration)'
+
+  - stage: deployTF
+    condition: eq('${{ parameters.actionToPerform }}', 'Deploy')
+    jobs:
+      - job: deployTF
+        steps: 
+         - task: DownloadBuildArtifacts@1
+           inputs:
+             buildType: 'current'
+             downloadType: 'single'
+             artifactName: 'drop'
+             downloadPath: '$(System.ArtifactsDirectory)'
+         
+         - task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformInstaller@1  
+           inputs:
+             terraformVersion: 'latest'
+  
+         - task: TerraformTaskV4@4
+           inputs:
+             provider: 'azurerm'
+             command: 'init'
+             workingDirectory: '$(System.DefaultWorkingDirectory)/Iac-code/terraform'
+             backendServiceArm: 'serviceconn1'
+             backendAzureRmResourceGroupName: 'Paritala'
+             backendAzureRmStorageAccountName: 'ctl2sa'
+             backendAzureRmContainerName: 'ctl2container'
+             backendAzureRmKey: 'terraform.tfstate'
+
+         - task: TerraformCLI@2
+           inputs:
+             command: 'validate'
+             workingDirectory: '$(System.DefaultWorkingDirectory)/Iac-code/terraform'
+             allowTelemetryCollection: true
+
+         - task: TerraformTaskV4@4
+           inputs:
+             provider: 'azurerm'
+             command: 'plan'
+             workingDirectory: '$(System.DefaultWorkingDirectory)/Iac-code/terraform'
+             commandOptions: '-input=true'
+             environmentServiceNameAzureRM: 'serviceconn1'
+
+         - task: TerraformTaskV4@4
+           inputs:
+             provider: 'azurerm'
+             command: 'apply'
+             workingDirectory: '$(System.DefaultWorkingDirectory)/Iac-code/terraform'
+             commandOptions: '-auto-approve'
+             environmentServiceNameAzureRM: 'serviceconn1'
+        
+  - stage: deployApp
+    jobs:
+    - deployment: Deploy
+      environment: 'env'
+      strategy:
+       runOnce:
+        deploy:
+          steps:
+           - task: DownloadBuildArtifacts@1
+             inputs:
+               buildType: 'current'
+               downloadType: 'single'
+               artifactName: 'drop'
+               downloadPath: '$(System.ArtifactsDirectory)'
+          
+           - task: AzureRmWebAppDeployment@4
+             inputs:
+               ConnectionType: 'AzureRM'
+               azureSubscription: 'serviceconn1'
+               appType: 'webApp'
+               WebAppName: '$(appname)'
+               packageForLinux: '$(System.ArtifactsDirectory)/**/*.zip'
+
+  - stage: destroy
+    condition: eq('${{ parameters.actionToPerform}}', 'Destroy')            
+    jobs:
+      - job: 
+        steps: 
+        - task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformInstaller@1  
+          inputs:
+            terraformVersion: 'latest' 
+
+        - task: TerraformTaskV4@4
+          inputs:
+           provider: 'azurerm'
+           command: 'init'
+           workingDirectory: '$(System.DefaultWorkingDirectory)/Iac-code/terraform'
+           backendServiceArm: 'serviceconn1'
+           backendAzureRmResourceGroupName: 'Paritala'
+           backendAzureRmStorageAccountName: 'ctl2sa'
+           backendAzureRmContainerName: 'ctl2container'
+           backendAzureRmKey: 'terraform.tfstate'
+       
+        - task: TerraformTaskV4@4
+          inputs:
+            provider: 'azurerm'
+            command: 'destroy'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/Iac-code/terraform'
+            environmentServiceNameAzureRM: 'serviceconn1'
+          
+
+         
