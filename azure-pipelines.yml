@@ -95,7 +95,7 @@ stages:
              provider: 'azurerm'
              command: 'init'
              workingDirectory: '$(System.DefaultWorkingDirectory)/Iac-code/terraform'
-             backendServiceArm: 'serviceconn1'
+             backendServiceArm: 'AZResourceconn'
              backendAzureRmResourceGroupName: 'backendazurerg'
              backendAzureRmStorageAccountName: 'backendrg'
              backendAzureRmContainerName: 'testbacknd'
