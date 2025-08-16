@@ -96,9 +96,9 @@ stages:
              command: 'init'
              workingDirectory: '$(System.DefaultWorkingDirectory)/Iac-code/terraform'
              backendServiceArm: 'serviceconn1'
-             backendAzureRmResourceGroupName: 'Paritala'
-             backendAzureRmStorageAccountName: 'ctl2sa'
-             backendAzureRmContainerName: 'ctl2container'
+             backendAzureRmResourceGroupName: 'backendazurerg'
+             backendAzureRmStorageAccountName: 'backendrg'
+             backendAzureRmContainerName: 'testbacknd'
              backendAzureRmKey: 'terraform.tfstate'
 
          - task: TerraformCLI@2
@@ -113,7 +113,7 @@ stages:
              command: 'plan'
              workingDirectory: '$(System.DefaultWorkingDirectory)/Iac-code/terraform'
              commandOptions: '-input=true'
-             environmentServiceNameAzureRM: 'serviceconn1'
+             environmentServiceNameAzureRM: 'AZResourceconn'
 
          - task: TerraformTaskV4@4
            inputs:
@@ -121,7 +121,7 @@ stages:
              command: 'apply'
              workingDirectory: '$(System.DefaultWorkingDirectory)/Iac-code/terraform'
              commandOptions: '-auto-approve'
-             environmentServiceNameAzureRM: 'serviceconn1'
+             environmentServiceNameAzureRM: 'AZResourceconn'
         
   - stage: deployApp
     jobs:
@@ -141,7 +141,7 @@ stages:
            - task: AzureRmWebAppDeployment@4
              inputs:
                ConnectionType: 'AzureRM'
-               azureSubscription: 'serviceconn1'
+               azureSubscription: 'AZResourceconn'
                appType: 'webApp'
                WebAppName: '$(appname)'
                packageForLinux: '$(System.ArtifactsDirectory)/**/*.zip'
@@ -160,10 +160,10 @@ stages:
            provider: 'azurerm'
            command: 'init'
            workingDirectory: '$(System.DefaultWorkingDirectory)/Iac-code/terraform'
-           backendServiceArm: 'serviceconn1'
-           backendAzureRmResourceGroupName: 'Paritala'
-           backendAzureRmStorageAccountName: 'ctl2sa'
-           backendAzureRmContainerName: 'ctl2container'
+           backendServiceArm: 'AZResourceconn'
+           backendAzureRmResourceGroupName: 'backendazurerg'
+           backendAzureRmStorageAccountName: 'backendrg'
+           backendAzureRmContainerName: 'testbacknd'
            backendAzureRmKey: 'terraform.tfstate'
        
         - task: TerraformTaskV4@4
@@ -171,7 +171,7 @@ stages:
             provider: 'azurerm'
             command: 'destroy'
             workingDirectory: '$(System.DefaultWorkingDirectory)/Iac-code/terraform'
-            environmentServiceNameAzureRM: 'serviceconn1'
+            environmentServiceNameAzureRM: 'AZResourceconn'
           
 
          
