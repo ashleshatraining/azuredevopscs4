@@ -6,7 +6,7 @@ terraform {
     }
   }
   backend "azurerm" {
-    resource_group_name  = "ashlesha"
+    resource_group_name  = "backendazurerg"
     storage_account_name = "backendrg"
     container_name       = "testbacknd"
     key                  = "terraform.tfstate"
