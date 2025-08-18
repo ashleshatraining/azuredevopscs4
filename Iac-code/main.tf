@@ -6,9 +6,9 @@ terraform {
     }
   }
   backend "azurerm" {
-    resource_group_name  = "azcs4"
-    storage_account_name = "azcs4"
-    container_name       = "azcs4container"
+    resource_group_name  = "azure4devopscs"
+    storage_account_name = "cs4cr"
+    container_name       = "azurecs4container"
     key                  = "terraform.tfstate"
   }
 }
