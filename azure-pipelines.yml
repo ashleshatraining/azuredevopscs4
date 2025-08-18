@@ -144,7 +144,8 @@ stages:
                azureSubscription: 'AZResourceconn'
                appType: 'webApp'
                WebAppName: '$(appname)'
-               packageForLinux: '$(System.ArtifactsDirectory)/**/*.zip'
+               package: '$(System.ArtifactsDirectory)/**/*.zip'
+
 
   - stage: destroy
     condition: eq('${{ parameters.actionToPerform}}', 'Destroy')            
