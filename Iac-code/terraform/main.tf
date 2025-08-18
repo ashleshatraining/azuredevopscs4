@@ -32,8 +32,7 @@ resource "azurerm_service_plan" "plan" {
   name                = "${var.planname}"
   resource_group_name = data.azurerm_resource_group.rg.name
   location            = data.azurerm_resource_group.rg.location
-  sku_name            = "F1"
-  location = "East US"  
+  sku_name            = "F1"  
   os_type             = "Windows"
 }
 
