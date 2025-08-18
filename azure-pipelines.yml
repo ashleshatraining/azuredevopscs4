@@ -96,9 +96,9 @@ stages:
              command: 'init'
              workingDirectory: '$(System.DefaultWorkingDirectory)/Iac-code/terraform'
              backendServiceArm: 'AZResourceconn'
-             backendAzureRmResourceGroupName: 'backendazurerg'
-             backendAzureRmStorageAccountName: 'backendrg'
-             backendAzureRmContainerName: 'testbacknd'
+             backendAzureRmResourceGroupName: 'azcs4'
+             backendAzureRmStorageAccountName: 'azcs4'
+             backendAzureRmContainerName: 'azcs4container'
              backendAzureRmKey: 'terraform.tfstate'
 
          - task: TerraformCLI@2
@@ -161,9 +161,9 @@ stages:
            command: 'init'
            workingDirectory: '$(System.DefaultWorkingDirectory)/Iac-code/terraform'
            backendServiceArm: 'AZResourceconn'
-           backendAzureRmResourceGroupName: 'backendazurerg'
-           backendAzureRmStorageAccountName: 'backendrg'
-           backendAzureRmContainerName: 'testbacknd'
+           backendAzureRmResourceGroupName: 'azcs4'
+           backendAzureRmStorageAccountName: 'azcs4'
+           backendAzureRmContainerName: 'azcs4container'
            backendAzureRmKey: 'terraform.tfstate'
        
         - task: TerraformTaskV4@4
