@@ -31,7 +31,7 @@ resource "azurerm_service_plan" "plan" {
   name                = "${var.planname}"
   resource_group_name = data.azurerm_resource_group.rg.name
   location            = data.azurerm_resource_group.rg.location
-  sku_name            = "S1"
+  sku_name            = "F1"
   os_type             = "Windows"
 }
 
@@ -40,14 +40,6 @@ resource "azurerm_windows_web_app" "app" {
   resource_group_name = data.azurerm_resource_group.rg.name
   location            = data.azurerm_resource_group.rg.location
   service_plan_id     = azurerm_service_plan.plan.id
-
-  sku {
-    tier = "Free"
-    size = "F1"
-  }
-
-  os_type = "Windows"
-}
 
 
   site_config {
