@@ -24,7 +24,7 @@ provider "azurerm" {
 
 data "azurerm_resource_group" "rg" {
   name = "azcs4"
-  location = "East US"  
+  #location = "East US"  
 }
 
 
