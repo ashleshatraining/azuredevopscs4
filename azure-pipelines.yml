@@ -141,7 +141,7 @@ stages:
            - task: AzureRmWebAppDeployment@4
              inputs:
                ConnectionType: 'AzureRM'
-               azureSubscription: 'AZResourceconn'
+               azureSubscription: 'testcs4'
                appType: 'webApp'
                WebAppName: '$(appname)'
                package: '$(System.ArtifactsDirectory)/**/*.zip'
