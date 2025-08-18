@@ -24,6 +24,7 @@ provider "azurerm" {
 
 data "azurerm_resource_group" "rg" {
   name = "azcs4"
+  location = "East US"  
 }
 
 
@@ -32,6 +33,7 @@ resource "azurerm_service_plan" "plan" {
   resource_group_name = data.azurerm_resource_group.rg.name
   location            = data.azurerm_resource_group.rg.location
   sku_name            = "F1"
+  location = "East US"  
   os_type             = "Windows"
 }
 
