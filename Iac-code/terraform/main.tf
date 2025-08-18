@@ -24,14 +24,13 @@ provider "azurerm" {
 
 data "azurerm_resource_group" "rg" {
   name = "azcs4"
-  #location = "East US"  
 }
 
 
 resource "azurerm_service_plan" "plan" {
   name                = "${var.planname}"
   resource_group_name = data.azurerm_resource_group.rg.name
-  location            = data.azurerm_resource_group.rg.location
+  location            = "Central India"
   sku_name            = "S1"  
   os_type             = "Windows"
 }
@@ -39,7 +38,7 @@ resource "azurerm_service_plan" "plan" {
 resource "azurerm_windows_web_app" "app" {
   name                = "${var.appname}"
   resource_group_name = data.azurerm_resource_group.rg.name
-  location            = data.azurerm_resource_group.rg.location
+  location            = "Central India"
   service_plan_id     = azurerm_service_plan.plan.id
 
 
