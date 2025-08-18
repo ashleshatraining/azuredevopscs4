@@ -23,7 +23,7 @@ provider "azurerm" {
 
 
 data "azurerm_resource_group" "rg" {
-  name = "ashlesha"
+  name = "azcs4"
 }
 
 
