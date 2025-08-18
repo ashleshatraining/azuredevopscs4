@@ -41,6 +41,15 @@ resource "azurerm_windows_web_app" "app" {
   location            = data.azurerm_resource_group.rg.location
   service_plan_id     = azurerm_service_plan.plan.id
 
+  sku {
+    tier = "Free"
+    size = "F1"
+  }
+
+  os_type = "Windows"
+}
+
+
   site_config {
     always_on = true
   }
